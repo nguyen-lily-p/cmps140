@@ -2,9 +2,9 @@
 # Wan Fong
 # Andy Wong
 # CMPS 140: Artificial Intelligence
-# 28 January, 2019
+# 15 February 2019
 
-import argparse, csv, json, os, pandas, sys
+import argparse, csv, json, math, os, pandas, sys
 
 # default file path for training data files
 TRAIN_DATA_PATH = "data/train.csv"
@@ -83,16 +83,31 @@ def main():
 
     # combine features that have been split (Breed, Color)
     train_data_df["Breed"] = train_data_df[["Breed1", "Breed2"]].values.tolist()
-    # ??? How to remove None/nan values
+    train_data_df["Breed"] = train_data_df["Breed"].apply(lambda row: [breed for breed in row if str(breed) != "nan"])
+    train_data_df.drop("Breed1", axis = 1, inplace = True)
+    train_data_df.drop("Breed2", axis = 1, inplace = True)
+    train_data_df["Color"] = train_data_df[["Color1", "Color2", "Color3"]].values.tolist()
+    train_data_df["Color"] = train_data_df["Color"].apply(lambda row: [color for color in row if str(color) != "nan"])
+    train_data_df.drop("Color1", axis = 1, inplace = True)
+    train_data_df.drop("Color2", axis = 1, inplace = True)
+    train_data_df.drop("Color3", axis = 1, inplace = True)
+
+    train_data_df.to_csv("data/train_modified.csv", index = False)
 
     # do one-hot encoding/dummies for each feature that needs it
+    train_data_df = train_data_df.join(train_data_df["Breed"].str.get_dummies(sep = ","))
+    train_data_df = train_data_df.join(train_data_df["Color"].str.get_dummies(sep = ","))
+    train_data_df = pandas.get_dummies(train_data_df, prefix = ["Gender", "MaturitySize", "FurLength", "Vaccinated", "Dewormed", "Sterilized", "Health"], columns = ["Gender", "MaturitySize", "FurLength", "Vaccinated", "Dewormed", "Sterilized", "Health"])
 
-    # split data between dogs/cats, and write modified dataframes to new files
+    # split data between dogs/cats
     train_dog_df = train_data_df[train_data_df.Type == 1]
     train_cat_df = train_data_df[train_data_df.Type == 2]
     train_dog_df = train_dog_df.drop("Type", axis = 1)
     train_cat_df = train_cat_df.drop("Type", axis = 1)
 
+    # write modified dataframes to new files
+    train_dog_df.columns = train_dog_df.columns.str.strip().str.replace("'", "").str.replace("[", "").str.replace("]", "")
+    train_cat_df.columns = train_cat_df.columns.str.strip().str.replace("'", "").str.replace("[", "").str.replace("]", "")    
     train_dog_df.to_csv("data/train_dog.csv", index = False)
     train_cat_df.to_csv("data/train_cat.csv", index = False)
     #train_data_df.to_csv("data/train_modified.csv", index = False)
