@@ -2,9 +2,9 @@
 # Wan Fong
 # Andy Wong
 # CMPS 140: Artificial Intelligence
-# 15 February 2019
+# 17 February 2019
 
-import csv, json, math, os, pandas, sys
+import csv, json, os, pandas, sys
 
 # dictionaries for encoded categorical features
 BREED_DICT = {0: None}
@@ -122,6 +122,7 @@ def preprocess_data(train_data_path, breed_labels_path, color_labels_path, senti
     cat_data_df = cat_data_df.join(cat_data_df["Breed"].str.get_dummies(sep = "|"))
     cat_data_df = cat_data_df.join(cat_data_df["Color"].str.get_dummies(sep = "|"))
     cat_data_df = pandas.get_dummies(cat_data_df, prefix = ["Gender", "MaturitySize", "FurLength", "Vaccinated", "Dewormed", "Sterilized", "Health"], columns = ["Gender", "MaturitySize", "FurLength", "Vaccinated", "Dewormed", "Sterilized", "Health"])
+    # drop the old breed and color columns
     dog_data_df = dog_data_df.drop("Breed", axis = 1)
     dog_data_df = dog_data_df.drop("Color", axis = 1)
     cat_data_df = cat_data_df.drop("Breed", axis = 1)

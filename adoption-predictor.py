@@ -2,9 +2,13 @@
 # Wan Fong
 # Andy Wong
 # CMPS 140: Artificial Intelligence
-# 15 February 2019
+# 17 February 2019
 
-import argparse, csv, json, math, os, pandas, preprocess, sys
+import argparse, csv, os, pandas, preprocess, sklearn, sys
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import LinearSVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import VotingClassifier
 
 # default file path for training data files
 TRAIN_DATA_PATH = "data/train.csv"
@@ -16,6 +20,17 @@ SENTIMENT_DATA_PATH = "data/train_sentiment/"
 DOG_DATA_PATH = "data/train_dog.csv"
 CAT_DATA_PATH = "data/train_cat.csv"
 
+# declare classifiers
+naiveBayesModel = GaussianNB()
+linearSVCModel = LinearSVC(penalty = 'l2', dual = False)
+logRegModel = LogisticRegression(C = 1.5, solver = 'lbfgs', multi_class = 'multinomial', random_state = 1, max_iter = 1000)
+
+def trainClassifiers(features, labels):
+    # create ensemble classifier
+    ensembleModel = VotingClassifier(estimators = [('NB', naiveBayesModel), ('SVM', linearSVCModel), ('LR', logRegModel)], voting = 'hard')
+    ensembleModel = ensembleModel.fit(features, labels)
+
+
 def main():
     ### read in command-line arguments ###
     parser = argparse.ArgumentParser(description = "program to predict the adoption speed of a given pet")
@@ -26,7 +41,7 @@ def main():
     ### preprocess the data & feature selection ###
     if args.preprocess_flag or DOG_DATA_PATH[5:] not in os.listdir("data/") or CAT_DATA_PATH[5:] not in os.listdir("data/"):
         preprocess.preprocess_data(args.train_file, BREED_LABELS_PATH, COLOR_LABELS_PATH, SENTIMENT_DATA_PATH, DOG_DATA_PATH, CAT_DATA_PATH)
-        print("preprocess stage complete")
+        print("preprocessing stage complete")
 
     ### read training data into a pandas dataframe ###
     try:
@@ -39,7 +54,12 @@ def main():
         print("ERROR: Unknown error occurred trying to read dog/cat data file")
         sys.exit(1)
 
+    ### get features ###
+    dog_feat_df = dog_data_df.drop("AdoptionSpeed", axis = 1)
+    dog_feat_df = dog_feat_df.drop("PetID", axis = 1)
+
     ### training ###
+    model = trainClassifiers(dog_feat_df, dog_data_df["AdoptionSpeed"])
 
     ### testing ###
 
