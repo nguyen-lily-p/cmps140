@@ -29,6 +29,7 @@ def trainClassifiers(features, labels):
     # create ensemble classifier
     ensembleModel = VotingClassifier(estimators = [('NB', naiveBayesModel), ('SVM', linearSVCModel), ('LR', logRegModel)], voting = 'hard')
     ensembleModel = ensembleModel.fit(features, labels)
+    return ensembleModel
 
 
 def main():
