@@ -1,0 +1,25 @@
++++ CROSS VALIDATION (CV = 10) +++
+
+CLASSIFIER: naive_bayes.GaussianNB
+	Average f1_micro: 0.0461218416208
+	Average recall_micro: 0.0461218416208
+	Average precision_micro: 0.0461218416208
+	Average accuracy: 0.0461218416208
+
+CLASSIFIER: svm.classes.LinearSVC
+	Average f1_micro: 0.388198386224
+	Average recall_micro: 0.387703178811
+	Average precision_micro: 0.388570128516
+	Average accuracy: 0.388198845935
+
+CLASSIFIER: linear_model.logistic.LogisticRegression
+	Average f1_micro: 0.383749808275
+	Average recall_micro: 0.383749808275
+	Average precision_micro: 0.383749808275
+	Average accuracy: 0.383749808275
+
+CLASSIFIER: ensemble.voting_classifier.VotingClassifier
+	Average f1_micro: 0.384986210443
+	Average recall_micro: 0.383746745961
+	Average precision_micro: 0.384738070351
+	Average accuracy: 0.385354898752
